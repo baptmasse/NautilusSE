@@ -1,0 +1,53 @@
+#define ECHOPIN1 2// Pin to receive echo pulse
+#define TRIGPIN1 3// Pin to send trigger pulse
+#define ECHOPIN2 4
+#define TRIGPIN2 5
+#define ECHOPIN3 6
+#define TRIGPIN3 7
+
+void setup(){
+  Serial.begin(9600);
+  pinMode(ECHOPIN, INPUT);
+  pinMode(TRIGPIN, OUTPUT);
+  digitalWrite(ECHOPIN, HIGH);
+}
+void loop(){
+  digitalWrite(TRIGPIN1, LOW); // Set the trigger pin to low for 2uS
+  delayMicroseconds(2);
+  digitalWrite(TRIGPIN1, HIGH); // Send a 10uS high to trigger ranging
+  delayMicroseconds(10);
+  digitalWrite(TRIGPIN1, LOW); // Send pin low again
+  int distance1 = pulseIn(ECHOPIN1, HIGH,26000); // Read in times pulse
+  distance1= distance1/58;
+
+  digitalWrite(TRIGPIN2, LOW); // Set the trigger pin to low for 2uS
+  delayMicroseconds(2);
+  digitalWrite(TRIGPIN2, HIGH); // Send a 10uS high to trigger ranging
+  delayMicroseconds(10);
+  digitalWrite(TRIGPIN2, LOW); // Send pin low again
+  int distance2 = pulseIn(ECHOPIN2, HIGH,26000); // Read in times pulse
+  distance2= distance2/58;
+  
+  digitalWrite(TRIGPIN3, LOW); // Set the trigger pin to low for 2uS
+  delayMicroseconds(2);
+  digitalWrite(TRIGPIN3, HIGH); // Send a 10uS high to trigger ranging
+  delayMicroseconds(10);
+  digitalWrite(TRIGPIN3, LOW); // Send pin low again
+  int distance3 = pulseIn(ECHOPIN3, HIGH,26000); // Read in times pulse
+  distance3= distance3/58;
+
+  if(distance1<30)
+  {
+	//commande pour corriger la trajectoire dans la direction du capteur
+  }
+  if(distance2<30)
+  {
+	//commande pour corriger la trajectoire dans la direction du capteur
+  }
+  if(distance3<30)
+  {
+	//commande pour corriger la trajectoire dans la direction du capteur
+  }
+
+  delay(5);// Wait _mS before next ranging
+}
