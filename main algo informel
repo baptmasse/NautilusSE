@@ -1,0 +1,41 @@
+
+int main()
+{
+    // mode exploration = avance jusqua ce quil y a un objet, tourner autour
+    do
+    {
+        tests()
+        avancer un tout petit peu
+    }while(absence d'objet)  //distance < 25cm
+    tests()
+    do
+    {
+        do
+        {
+            test()
+            avancer vers la droite doucement
+            test()
+            if(objet > 30cm)
+                avancer un peu
+        }while(objet plus en vu)
+        test()
+        do
+        {
+            test()
+            pivoter lentement vers la gauche
+        }while(objet pas en vu)
+        test()
+    }while(retour case depart)
+
+    return 404;
+}
+
+void tests(les capteurs)
+{
+    if(profondeur<10m)
+        monter doucement
+    if(distanceObject<15cm)
+        reculer doucement
+    if(vitesse trop grande)
+        ralentir
+}
