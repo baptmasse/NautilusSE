@@ -1,6 +1,6 @@
 #include "FonctionsDeBaseMoteur.h"
 
-//#include <Arduino.h>
+#include <Arduino.h>
 
 FonctionsDeBaseMoteur::FonctionsDeBaseMoteur()
 {
@@ -24,10 +24,23 @@ FonctionsDeBaseMoteur::FonctionsDeBaseMoteur(int pinMot1, int pinMot2, int pinMo
     this->pinMotProf3 = pinMotProf3;
     this->pinMotProf4 = pinMotProf4;
 
-    for(int i=0;i<4;i++)
-    {
-        Id[i] = i+1;
-    }
+    Moteur1(pinMot1, 1); //Moteur 1 : moteur avant gauche (en se situant derrière le sous-marin)
+    Moteur2(pinMot2, 2); //Moteur 2 : moteur avant droit
+    Moteur3(pinMot3, 3); //Moteur 3 : moteur arrière gauche
+    Moteur4(pinMot4, 4); //Moteur 4 : moteur arrière droit
+
+        //Servos gérant les moteurs de direction
+    Servo1(pinServo1, 1); //Servos : même code chiffré que pour les moteurs, correspondance des numéros
+    Servo2(pinServo2, 2);
+    Servo3(pinServo3, 3);
+    Servo4(pinServo4, 4);
+
+        //Moteurs de profondeur
+    MoteurProf1(pinMotProf1, 1);
+    MoteurProf2(pinMotProf2, 2);
+    MoteurProf3(pinMotProf3, 3);
+    MoteurProf4(pinMotProf4, 4);
+
 
     Entree = 0;
     Sortie = 0;
@@ -57,6 +70,7 @@ FonctionsDeBaseMoteur::FonctionsDeBaseMoteur(int pinMot1, int pinMot2, int pinMo
     P_Ki = 1;
     P_Kd = 1;
 
+    Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT);
     Correcteur.SetMode(AUTOMATIC);
 }
 
@@ -281,7 +295,7 @@ void FonctionsDeBaseMoteur::ArretUrgence()
 double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan à l'aide du développement limité usuel
 {
     double atan;
-    int atan=x;
+    atan=x;
     int n=100;
     for(int i=1;i<n;i++)
     {
