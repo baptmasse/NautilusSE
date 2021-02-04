@@ -1,8 +1,8 @@
 #ifndef SERVOMOTEURS_H
 #define SERVOMOTEURS_H
 
-#include <Arduino.h>
-#include <Servo.h>
+//#include <Arduino.h>
+//#include <Servo.h>
 
 class Servomoteurs
 {
