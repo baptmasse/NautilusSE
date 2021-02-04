@@ -3,9 +3,9 @@
 
 #include "Servomoteurs.h"
 #include "Moteurs.h"
-#include <PID_v1.h>
+//#include <PID_v1.h>
 
-#include <Arduino.h>
+//#include <Arduino.h>
 
 
 class FonctionsDeBaseMoteur
@@ -21,6 +21,10 @@ class FonctionsDeBaseMoteur
         void GereInclinaison(double AngleTangage, double AngleRoulis);
         void Correction(double VitesseConsigne, double VitesseReelle, bool SensVit, bool SensDeRotation, double Cap, double AngleLacet, double AngleTangage, double AngleRoulis, double ProfondeurConsigne, double ProfondeurReelle, double SensProf);
         void ArretUrgence();
+
+        //Fonctions mathematiques utiles
+        double Arctan(double x);
+        double Signe(double x);
 
 
     protected:
@@ -41,52 +45,54 @@ class FonctionsDeBaseMoteur
         int pinMotProf3;
         int pinMotProf4;
 
+        int Id[4];
+
         //Moteurs de direction
-        Moteurs Moteur1(int pinMot1, 1); //Moteur 1 : moteur avant gauche (en se situant derrière le sous-marin)
-        Moteurs Moteur2(int pinMot2, 2); //Moteur 2 : moteur avant droit
-        Moteurs Moteur3(int pinMot3, 3); //Moteur 3 : moteur arrière gauche
-        Moteurs Moteur4(int pinMot4, 4); //Moteur 4 : moteur arrière droit
+        Moteurs Moteur1(int pinMot1, int Id[0]); //Moteur 1 : moteur avant gauche (en se situant derrière le sous-marin)
+        Moteurs Moteur2(int pinMot2, int Id[1]); //Moteur 2 : moteur avant droit
+        Moteurs Moteur3(int pinMot3, int Id[2]); //Moteur 3 : moteur arrière gauche
+        Moteurs Moteur4(int pinMot4, int Id[3]); //Moteur 4 : moteur arrière droit
 
         //Servos gérant les moteurs de direction
-        Servomoteurs Servo1(int pinServo1, 1); //Servos : même code chiffré que pour les moteurs, correspondance des numéros
-        Servomoteurs Servo2(int pinServo2, 2);
-        Servomoteurs Servo3(int pinServo3, 3);
-        Servomoteurs Servo4(int pinServo4, 4);
+        Servomoteurs Servo1(int pinServo1, int Id[0]); //Servos : même code chiffré que pour les moteurs, correspondance des numéros
+        Servomoteurs Servo2(int pinServo2, int Id[1]);
+        Servomoteurs Servo3(int pinServo3, int Id[2]);
+        Servomoteurs Servo4(int pinServo4, int Id[3]);
 
         //Moteurs de profondeur
-        Moteurs MoteurProf1(int pinMot1, 1);
-        Moteurs MoteurProf2(int pinMot2, 2);
-        Moteurs MoteurProf3(int pinMot3, 3);
-        Moteurs MoteurProf4(int pinMot4, 4);
+        Moteurs MoteurProf1(int pinMot1Prof, int Id[0]);
+        Moteurs MoteurProf2(int pinMot2Prof, int Id[1]);
+        Moteurs MoteurProf3(int pinMot3Prof, int Id[2]);
+        Moteurs MoteurProf4(int pinMot4Prof, int Id[3]);
 
 
-        double Entree = 0;
-        double Sortie = 0;
-        double Ref = 0;
-        double Kp = 1;
-        double Ki = 1;
-        double Kd = 1;
+        double Entree;
+        double Sortie;
+        double Ref;
+        double Kp;
+        double Ki;
+        double Kd;
 
 
-        double V_Kp = 1;//Paramètres correction vitesse
-        double V_Ki = 1;
-        double V_Kd = 1;
+        double V_Kp;//Paramètres correction vitesse
+        double V_Ki;
+        double V_Kd;
 
-        double Lac_Kp = 1;//Paramètres correction lacet
-        double Lac_Ki = 1;
-        double Lac_Kd = 1;
+        double Lac_Kp;//Paramètres correction lacet
+        double Lac_Ki;
+        double Lac_Kd;
 
-        double Rou_Kp = 1;//Paramètres correction roulis
-        double Rou_Ki = 1;
-        double Rou_Kd = 1;
+        double Rou_Kp;//Paramètres correction roulis
+        double Rou_Ki;
+        double Rou_Kd;
 
-        double Tan_Kp = 1;//Paramètres correction tangage
-        double Tan_Ki = 1;
-        double Tan_Kd = 1;
+        double Tan_Kp;//Paramètres correction tangage
+        double Tan_Ki;
+        double Tan_Kd;
 
-        double P_Kp = 1;//Paramètres correction profondeur
-        double P_Ki = 1;
-        double P_Kd = 1;
+        double P_Kp;//Paramètres correction profondeur
+        double P_Ki;
+        double P_Kd;
 
         PID Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT);
 };

@@ -1,8 +1,8 @@
 #ifndef MOTEURS_H
 #define MOTEURS_H
 
-#include <Arduino.h>
-#include <Servo.h>
+//#include <Arduino.h>
+//#include <Servo.h>
 
 class Moteurs
 {
@@ -25,3 +25,4 @@ class Moteurs
 };
 
 #endif // MOTEURS_H
+

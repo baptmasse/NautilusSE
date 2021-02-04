@@ -1,6 +1,6 @@
 #include "Moteurs.h"
 
-#include <Arduino.h>
+//#include <Arduino.h>
 
 Moteurs::Moteurs()
 {
@@ -22,7 +22,7 @@ Moteurs::Moteurs(int ESCpin, int NumeroMoteur)
     delay(7000); //Attente de 7 secondes
 }
 
-void Moteurs::Rotation(double Speed, bool Sense) //Sens trigo : 0 ; Sens non trigo : 1
+void Moteurs::Rotation(double Speed, bool Sens) //Sens trigo : 0 ; Sens non trigo : 1
 {
     //Echelle de 1100 à 1900 ; vitesse nulle de 1468 à 1532
 
