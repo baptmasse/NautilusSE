@@ -24,10 +24,22 @@ FonctionsDeBaseMoteur::FonctionsDeBaseMoteur(int pinMot1, int pinMot2, int pinMo
     this->pinMotProf3 = pinMotProf3;
     this->pinMotProf4 = pinMotProf4;
 
-    for(int i=0;i<4;i++)
-    {
-        Id[i] = i+1;
-    }
+    Moteur1(pinMot1, 1); //Moteur 1 : moteur avant gauche (en se situant derriÃ¨re le sous-marin)
+    Moteur2(pinMot2, 2); //Moteur 2 : moteur avant droit
+    Moteur3(pinMot3, 3); //Moteur 3 : moteur arriÃ¨re gauche
+    Moteur4(pinMot4, 4); //Moteur 4 : moteur arriÃ¨re droit
+
+        //Servos gÃ©rant les moteurs de direction
+    Servo1(pinServo1, 1); //Servos : mÃªme code chiffrÃ© que pour les moteurs, correspondance des numÃ©ros
+    Servo2(pinServo2, 2);
+    Servo3(pinServo3, 3);
+    Servo4(pinServo4, 4);
+
+        //Moteurs de profondeur
+    MoteurProf1(pinMotProf1, 1);
+    MoteurProf2(pinMotProf2, 2);
+    MoteurProf3(pinMotProf3, 3);
+    MoteurProf4(pinMotProf4, 4);
 
     Entree = 0;
     Sortie = 0;
@@ -37,26 +49,27 @@ FonctionsDeBaseMoteur::FonctionsDeBaseMoteur(int pinMot1, int pinMot2, int pinMo
     Kd = 1;
 
 
-    V_Kp = 1;//Paramètres correction vitesse
+    V_Kp = 1;//ParamÃ¨tres correction vitesse
     V_Ki = 1;
     V_Kd = 1;
 
-    Lac_Kp = 1;//Paramètres correction lacet
+    Lac_Kp = 1;//ParamÃ¨tres correction lacet
     Lac_Ki = 1;
     Lac_Kd = 1;
 
-    Rou_Kp = 1;//Paramètres correction roulis
+    Rou_Kp = 1;//ParamÃ¨tres correction roulis
     Rou_Ki = 1;
     Rou_Kd = 1;
 
-    Tan_Kp = 1;//Paramètres correction tangage
+    Tan_Kp = 1;//ParamÃ¨tres correction tangage
     Tan_Ki = 1;
     Tan_Kd = 1;
 
-    P_Kp = 1;//Paramètres correction profondeur
+    P_Kp = 1;//ParamÃ¨tres correction profondeur
     P_Ki = 1;
     P_Kd = 1;
 
+    Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT);
     Correcteur.SetMode(AUTOMATIC);
 }
 
@@ -66,7 +79,7 @@ FonctionsDeBaseMoteur::~FonctionsDeBaseMoteur()
     //dtor
 }
 
-void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypothèse : l'angle reçu est compris entre 0° et 360° avec pour référence l'avant
+void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //HypothÃ¨se : l'angle reÃ§u est compris entre 0Â° et 360Â° avec pour rÃ©fÃ©rence l'avant
 {
     bool Sens2;
 
@@ -110,26 +123,26 @@ void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypot
 
 void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRotation, double Speed, bool Sens)
 {
-    //Les distances sont en mètres et les angles en degrés
-    //Dans cette fonction, le sous-marin tourne autour d'un point situé à une distance égale des deux moteurs situés du côté duquel le sous-marin tourne
-    //On garde une vitesse constante sur les moteurs, on joue seulement sur l'angle des servos (mathématiquement plus simple)
-    //Pour SensDeRotation : 0 : tourne à gauche ; 1 : tourne à droite
+    //Les distances sont en mÃ¨tres et les angles en degrÃ©s
+    //Dans cette fonction, le sous-marin tourne autour d'un point situÃ© Ã  une distance Ã©gale des deux moteurs situÃ©s du cÃ´tÃ© duquel le sous-marin tourne
+    //On garde une vitesse constante sur les moteurs, on joue seulement sur l'angle des servos (mathÃ©matiquement plus simple)
+    //Pour SensDeRotation : 0 : tourne Ã  gauche ; 1 : tourne Ã  droite
 
-    double d1 = 0.5; //Distance entre le centre de rotation du servo et l'axe de symétrie du sous-marin allant de l'avant à l'arrière(demi-largeur); à définir
-    double d2 = 0.5; //Distance entre le centre de rotation du servo et l'axe de symétrie du sous-marin allant d'un côté à l'autre(demi-longueur); à définir
-    double lambda = distancePointRotation;//Distance entre le poinr autour duquel le sous-marin tourne et l'axe de symétrie du sous-marin
+    double d1 = 0.5; //Distance entre le centre de rotation du servo et l'axe de symÃ©trie du sous-marin allant de l'avant Ã  l'arriÃ¨re(demi-largeur); Ã  dÃ©finir
+    double d2 = 0.5; //Distance entre le centre de rotation du servo et l'axe de symÃ©trie du sous-marin allant d'un cÃ´tÃ© Ã  l'autre(demi-longueur); Ã  dÃ©finir
+    double lambda = distancePointRotation;//Distance entre le poinr autour duquel le sous-marin tourne et l'axe de symÃ©trie du sous-marin
 
-    double lambda1 = d1-lambda; //Distance entre le point de rotation et les moteurs situés à l'intérieur de la rotation
-    double lambda2 = lambda+d1; //Distance entre le point de rotation et les moteurs situés à l'extérieur de la rotation
+    double lambda1 = d1-lambda; //Distance entre le point de rotation et les moteurs situÃ©s Ã  l'intÃ©rieur de la rotation
+    double lambda2 = lambda+d1; //Distance entre le point de rotation et les moteurs situÃ©s Ã  l'extÃ©rieur de la rotation
 
-    double lim = d1 + tan(45)*d2; //Les moteurs à l'intérieur de la rotation ne peuvent pivoter que de 45° selon la distance à laquelle se trouve le point de rotation
-                                //Il faut donc définir une limite au-delà de laquelle leur orientation sera inversée de 180° (ainsi que le sens de rotation des moteurs d'ailleurs)
+    double lim = d1 + tan(45)*d2; //Les moteurs Ã  l'intÃ©rieur de la rotation ne peuvent pivoter que de 45Â° selon la distance Ã  laquelle se trouve le point de rotation
+                                //Il faut donc dÃ©finir une limite au-delÃ  de laquelle leur orientation sera inversÃ©e de 180Â° (ainsi que le sens de rotation des moteurs d'ailleurs)
 
     double phi1; double phi2; double phi3; double phi4;
 
     bool Sens2=Sens;
 
-    if(SensDeRotation==0) //Tourne du coté gauche
+    if(SensDeRotation==0) //Tourne du cotÃ© gauche
     {
         if(lambda<=lim)
         {
@@ -162,7 +175,7 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
         Moteur4.Rotation(Speed, Sens);
 
     }
-    else //Tourne du côté droit
+    else //Tourne du cÃ´tÃ© droit
     {
         if(lambda<=lim)
         {
@@ -278,10 +291,10 @@ void FonctionsDeBaseMoteur::ArretUrgence()
     MoteurProf4.UrgentStop();
 }
 
-double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan à l'aide du développement limité usuel
+double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan Ã  l'aide du dÃ©veloppement limitÃ© usuel
 {
     double atan;
-    int atan=x;
+    atan=x;
     int n=100;
     for(int i=1;i<n;i++)
     {
