@@ -1,6 +1,6 @@
 #include "FonctionsDeBaseMoteur.h"
 
-#include <Arduino.h>
+//#include <Arduino.h>
 
 FonctionsDeBaseMoteur::FonctionsDeBaseMoteur()
 {
@@ -23,6 +23,39 @@ FonctionsDeBaseMoteur::FonctionsDeBaseMoteur(int pinMot1, int pinMot2, int pinMo
     this->pinMotProf2 = pinMotProf2;
     this->pinMotProf3 = pinMotProf3;
     this->pinMotProf4 = pinMotProf4;
+
+    for(int i=0;i<4;i++)
+    {
+        Id[i] = i+1;
+    }
+
+    Entree = 0;
+    Sortie = 0;
+    Ref = 0;
+    Kp = 1;
+    Ki = 1;
+    Kd = 1;
+
+
+    V_Kp = 1;//Paramètres correction vitesse
+    V_Ki = 1;
+    V_Kd = 1;
+
+    Lac_Kp = 1;//Paramètres correction lacet
+    Lac_Ki = 1;
+    Lac_Kd = 1;
+
+    Rou_Kp = 1;//Paramètres correction roulis
+    Rou_Ki = 1;
+    Rou_Kd = 1;
+
+    Tan_Kp = 1;//Paramètres correction tangage
+    Tan_Ki = 1;
+    Tan_Kd = 1;
+
+    P_Kp = 1;//Paramètres correction profondeur
+    P_Ki = 1;
+    P_Kd = 1;
 
     Correcteur.SetMode(AUTOMATIC);
 }
@@ -100,8 +133,8 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
     {
         if(lambda<=lim)
         {
-            phi1 = sign(lambda1)*arctan(d1/lambda1);
-            phi3 = 180 + sign(lambda1)*arctan(d1/lambda1);
+            phi1 = Signe(lambda1)*Arctan(d1/lambda1);
+            phi3 = 180 + Signe(lambda1)*Arctan(d1/lambda1);
 
             if(Sens==0)
                 Sens2=1;
@@ -111,12 +144,12 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
 
         if(lambda>lim)
         {
-            phi1 = 90 + arctan(d1/lambda1);
-            phi3 = 90 - arctan(d1/lambda1);
+            phi1 = 90 + Arctan(d1/lambda1);
+            phi3 = 90 - Arctan(d1/lambda1);
         }
 
-        phi2 = -90 + arctan(d1/lambda2);
-        phi4 = -90 - arctan(d1/lambda2);
+        phi2 = -90 + Arctan(d1/lambda2);
+        phi4 = -90 - Arctan(d1/lambda2);
 
         Servo1.RotationAngle(phi1);
         Servo2.RotationAngle(phi2);
@@ -125,7 +158,7 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
 
         Moteur1.Rotation(Speed, Sens2);
         Moteur2.Rotation(Speed, Sens);
-        Moteur3.Rotation(Speed, Sens);
+        Moteur3.Rotation(Speed, Sens2);
         Moteur4.Rotation(Speed, Sens);
 
     }
@@ -133,8 +166,8 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
     {
         if(lambda<=lim)
         {
-            phi2 = -sign(lambda1)*arctan(d1/lambda1);
-            phi4 = -180 - sign(lambda1)*arctan(d1/lambda1);
+            phi2 = -Signe(lambda1)*Arctan(d1/lambda1);
+            phi4 = -180 - Signe(lambda1)*Arctan(d1/lambda1);
 
             if(Sens==0)
                 Sens2=1;
@@ -144,12 +177,12 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
 
         if(lambda>lim)
         {
-            phi2 = -90 - arctan(d1/lambda1);
-            phi4 = 90 + arctan(d1/lambda1);
+            phi2 = -90 - Arctan(d1/lambda1);
+            phi4 = 90 + Arctan(d1/lambda1);
         }
 
-        phi1 = 90 - arctan(d1/lambda2);
-        phi3 = 90 + arctan(d1/lambda2);
+        phi1 = 90 - Arctan(d1/lambda2);
+        phi3 = 90 + Arctan(d1/lambda2);
 
         Servo1.RotationAngle(phi1);
         Servo2.RotationAngle(phi2);
@@ -243,4 +276,22 @@ void FonctionsDeBaseMoteur::ArretUrgence()
     MoteurProf2.UrgentStop();
     MoteurProf3.UrgentStop();
     MoteurProf4.UrgentStop();
+}
+
+double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan à l'aide du développement limité usuel
+{
+    double atan;
+    int atan=x;
+    int n=100;
+    for(int i=1;i<n;i++)
+    {
+        atan = atan + pow(-1,i)*pow(x,(2*i+1))/(2*i+1);
+    }
+    return atan;
+}
+
+double FonctionsDeBaseMoteur::Signe(double x)//Calcul du signe de x
+{
+    x = x/abs(x);
+    return x;
 }
