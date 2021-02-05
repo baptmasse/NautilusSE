@@ -1,85 +1,18 @@
 #include "FonctionsDeBaseMoteur.h"
 
-//#include <Arduino.h>
+#include <Arduino.h>
 
-FonctionsDeBaseMoteur::FonctionsDeBaseMoteur()
+FonctionsDeBaseMoteur::FonctionsDeBaseMoteur() : Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT)
 {
     //ctor
 }
-
-FonctionsDeBaseMoteur::FonctionsDeBaseMoteur(int pinMot1, int pinMot2, int pinMot3, int pinMot4, int pinServo1, int pinServo2, int pinServo3, int pinServo4, int pinMotProf1, int pinMotProf2, int pinMotProf3, int pinMotProf4)
-{
-    this->pinMot1 = pinMot1;
-    this->pinMot2 = pinMot2;
-    this->pinMot3 = pinMot3;
-    this->pinMot4 = pinMot4;
-
-    this->pinServo1 = pinServo1;
-    this->pinServo2 = pinServo2;
-    this->pinServo3 = pinServo3;
-    this->pinServo4 = pinServo4;
-
-    this->pinMotProf1 = pinMotProf1;
-    this->pinMotProf2 = pinMotProf2;
-    this->pinMotProf3 = pinMotProf3;
-    this->pinMotProf4 = pinMotProf4;
-
-    Moteur1(pinMot1, 1); //Moteur 1 : moteur avant gauche (en se situant derri√®re le sous-marin)
-    Moteur2(pinMot2, 2); //Moteur 2 : moteur avant droit
-    Moteur3(pinMot3, 3); //Moteur 3 : moteur arri√®re gauche
-    Moteur4(pinMot4, 4); //Moteur 4 : moteur arri√®re droit
-
-        //Servos g√©rant les moteurs de direction
-    Servo1(pinServo1, 1); //Servos : m√™me code chiffr√© que pour les moteurs, correspondance des num√©ros
-    Servo2(pinServo2, 2);
-    Servo3(pinServo3, 3);
-    Servo4(pinServo4, 4);
-
-        //Moteurs de profondeur
-    MoteurProf1(pinMotProf1, 1);
-    MoteurProf2(pinMotProf2, 2);
-    MoteurProf3(pinMotProf3, 3);
-    MoteurProf4(pinMotProf4, 4);
-
-    Entree = 0;
-    Sortie = 0;
-    Ref = 0;
-    Kp = 1;
-    Ki = 1;
-    Kd = 1;
-
-
-    V_Kp = 1;//Param√®tres correction vitesse
-    V_Ki = 1;
-    V_Kd = 1;
-
-    Lac_Kp = 1;//Param√®tres correction lacet
-    Lac_Ki = 1;
-    Lac_Kd = 1;
-
-    Rou_Kp = 1;//Param√®tres correction roulis
-    Rou_Ki = 1;
-    Rou_Kd = 1;
-
-    Tan_Kp = 1;//Param√®tres correction tangage
-    Tan_Ki = 1;
-    Tan_Kd = 1;
-
-    P_Kp = 1;//Param√®tres correction profondeur
-    P_Ki = 1;
-    P_Kd = 1;
-
-    Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT);
-    Correcteur.SetMode(AUTOMATIC);
-}
-
 
 FonctionsDeBaseMoteur::~FonctionsDeBaseMoteur()
 {
     //dtor
 }
 
-void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypoth√®se : l'angle re√ßu est compris entre 0¬∞ et 360¬∞ avec pour r√©f√©rence l'avant
+void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //HypothËse : l'angle reÁu est compris entre 0∞ et 360∞ avec pour rÈfÈrence l'avant
 {
     bool Sens2;
 
@@ -123,26 +56,26 @@ void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypot
 
 void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRotation, double Speed, bool Sens)
 {
-    //Les distances sont en m√®tres et les angles en degr√©s
-    //Dans cette fonction, le sous-marin tourne autour d'un point situ√© √† une distance √©gale des deux moteurs situ√©s du c√¥t√© duquel le sous-marin tourne
-    //On garde une vitesse constante sur les moteurs, on joue seulement sur l'angle des servos (math√©matiquement plus simple)
-    //Pour SensDeRotation : 0 : tourne √† gauche ; 1 : tourne √† droite
+    //Les distances sont en mËtres et les angles en degrÈs
+    //Dans cette fonction, le sous-marin tourne autour d'un point situÈ ‡ une distance Ègale des deux moteurs situÈs du cÙtÈ duquel le sous-marin tourne
+    //On garde une vitesse constante sur les moteurs, on joue seulement sur l'angle des servos (mathÈmatiquement plus simple)
+    //Pour SensDeRotation : 0 : tourne ‡ gauche ; 1 : tourne ‡ droite
 
-    double d1 = 0.5; //Distance entre le centre de rotation du servo et l'axe de sym√©trie du sous-marin allant de l'avant √† l'arri√®re(demi-largeur); √† d√©finir
-    double d2 = 0.5; //Distance entre le centre de rotation du servo et l'axe de sym√©trie du sous-marin allant d'un c√¥t√© √† l'autre(demi-longueur); √† d√©finir
-    double lambda = distancePointRotation;//Distance entre le poinr autour duquel le sous-marin tourne et l'axe de sym√©trie du sous-marin
+    double d1 = 0.5; //Distance entre le centre de rotation du servo et l'axe de symÈtrie du sous-marin allant de l'avant ‡ l'arriËre(demi-largeur); ‡ dÈfinir
+    double d2 = 0.5; //Distance entre le centre de rotation du servo et l'axe de symÈtrie du sous-marin allant d'un cÙtÈ ‡ l'autre(demi-longueur); ‡ dÈfinir
+    double lambda = distancePointRotation;//Distance entre le poinr autour duquel le sous-marin tourne et l'axe de symÈtrie du sous-marin
 
-    double lambda1 = d1-lambda; //Distance entre le point de rotation et les moteurs situ√©s √† l'int√©rieur de la rotation
-    double lambda2 = lambda+d1; //Distance entre le point de rotation et les moteurs situ√©s √† l'ext√©rieur de la rotation
+    double lambda1 = d1-lambda; //Distance entre le point de rotation et les moteurs situÈs ‡ l'intÈrieur de la rotation
+    double lambda2 = lambda+d1; //Distance entre le point de rotation et les moteurs situÈs ‡ l'extÈrieur de la rotation
 
-    double lim = d1 + tan(45)*d2; //Les moteurs √† l'int√©rieur de la rotation ne peuvent pivoter que de 45¬∞ selon la distance √† laquelle se trouve le point de rotation
-                                //Il faut donc d√©finir une limite au-del√† de laquelle leur orientation sera invers√©e de 180¬∞ (ainsi que le sens de rotation des moteurs d'ailleurs)
+    double lim = d1 + tan(45)*d2; //Les moteurs ‡ l'intÈrieur de la rotation ne peuvent pivoter que de 45∞ selon la distance ‡ laquelle se trouve le point de rotation
+                                //Il faut donc dÈfinir une limite au-del‡ de laquelle leur orientation sera inversÈe de 180∞ (ainsi que le sens de rotation des moteurs d'ailleurs)
 
     double phi1; double phi2; double phi3; double phi4;
 
     bool Sens2=Sens;
 
-    if(SensDeRotation==0) //Tourne du cot√© gauche
+    if(SensDeRotation==0) //Tourne du cotÈ gauche
     {
         if(lambda<=lim)
         {
@@ -175,7 +108,7 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
         Moteur4.Rotation(Speed, Sens);
 
     }
-    else //Tourne du c√¥t√© droit
+    else //Tourne du cÙtÈ droit
     {
         if(lambda<=lim)
         {
@@ -211,18 +144,25 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
 
 }
 
-void FonctionsDeBaseMoteur::GererProfondeur(double Vitesse, bool Sens)//A modifier
+void FonctionsDeBaseMoteur::GererVitesseProfondeur(double Vitesse, bool Sens)//A modifier
 {
 
 }
 
-void FonctionsDeBaseMoteur::GereInclinaison(double AngleTangage, double AngleRoulis)//A modifier
+void FonctionsDeBaseMoteur::GererPositionProfondeur(double ConsigneProfondeur, double ProfondeurReelle)
 {
 
 }
 
-void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseReelle, bool SensVit, bool SensDeRotation, double Cap, double AngleLacet, double AngleTangage, double AngleRoulis, double ProfondeurConsigne, double ProfondeurReelle, double SensProf)
+void FonctionsDeBaseMoteur::GererInclinaison(double AngleTangage, double AngleRoulis)//A modifier
 {
+
+}
+
+void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseReelle, bool SensVit, bool SensDeRotation, double Cap, double AngleLacet, double AngleTangage, double AngleRoulis, double ProfondeurConsigne, double ProfondeurReelle, bool SensProf)
+{
+    Correcteur.SetMode(AUTOMATIC);
+
     //Correction vitesse
     Ref = VitesseConsigne;
     Entree = VitesseReelle;
@@ -230,7 +170,7 @@ void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseRee
     Kd = V_Kd;
     Ki = V_Ki;
     Correcteur.Compute();
-    Aller(Sortie, Sens, Cap);
+    Aller(Sortie, SensVit, Cap);
 
 
     //Correction lacet
@@ -240,7 +180,7 @@ void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseRee
     Kd = Lac_Kd;
     Ki = Lac_Ki;
     Correcteur.Compute();
-    Tourner(SensDeRotation, 1, VitesseConsigne, Sens);
+    Tourner(SensDeRotation, 1, VitesseConsigne, SensDeRotation);
 
     //Correction roulis
     Ref = 0;
@@ -268,7 +208,7 @@ void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseRee
     Kd = P_Kd;
     Ki = P_Ki;
     Correcteur.Compute();
-    GererProfondeur();//A completer
+    GererPositionProfondeur(ProfondeurConsigne, ProfondeurReelle);//A completer
 
 
 }
@@ -291,7 +231,7 @@ void FonctionsDeBaseMoteur::ArretUrgence()
     MoteurProf4.UrgentStop();
 }
 
-double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan √† l'aide du d√©veloppement limit√© usuel
+double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan ‡ l'aide du dÈveloppement limitÈ usuel
 {
     double atan;
     atan=x;
