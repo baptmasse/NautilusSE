@@ -1,78 +1,11 @@
 #include "FonctionsDeBaseMoteur.h"
 
-//#include <Arduino.h>
+#include <Arduino.h>
 
-FonctionsDeBaseMoteur::FonctionsDeBaseMoteur()
+FonctionsDeBaseMoteur::FonctionsDeBaseMoteur() : Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT)
 {
     //ctor
 }
-
-FonctionsDeBaseMoteur::FonctionsDeBaseMoteur(int pinMot1, int pinMot2, int pinMot3, int pinMot4, int pinServo1, int pinServo2, int pinServo3, int pinServo4, int pinMotProf1, int pinMotProf2, int pinMotProf3, int pinMotProf4)
-{
-    this->pinMot1 = pinMot1;
-    this->pinMot2 = pinMot2;
-    this->pinMot3 = pinMot3;
-    this->pinMot4 = pinMot4;
-
-    this->pinServo1 = pinServo1;
-    this->pinServo2 = pinServo2;
-    this->pinServo3 = pinServo3;
-    this->pinServo4 = pinServo4;
-
-    this->pinMotProf1 = pinMotProf1;
-    this->pinMotProf2 = pinMotProf2;
-    this->pinMotProf3 = pinMotProf3;
-    this->pinMotProf4 = pinMotProf4;
-
-    Moteur1(pinMot1, 1); //Moteur 1 : moteur avant gauche (en se situant derrière le sous-marin)
-    Moteur2(pinMot2, 2); //Moteur 2 : moteur avant droit
-    Moteur3(pinMot3, 3); //Moteur 3 : moteur arrière gauche
-    Moteur4(pinMot4, 4); //Moteur 4 : moteur arrière droit
-
-        //Servos gérant les moteurs de direction
-    Servo1(pinServo1, 1); //Servos : même code chiffré que pour les moteurs, correspondance des numéros
-    Servo2(pinServo2, 2);
-    Servo3(pinServo3, 3);
-    Servo4(pinServo4, 4);
-
-        //Moteurs de profondeur
-    MoteurProf1(pinMotProf1, 1);
-    MoteurProf2(pinMotProf2, 2);
-    MoteurProf3(pinMotProf3, 3);
-    MoteurProf4(pinMotProf4, 4);
-
-    Entree = 0;
-    Sortie = 0;
-    Ref = 0;
-    Kp = 1;
-    Ki = 1;
-    Kd = 1;
-
-
-    V_Kp = 1;//Paramètres correction vitesse
-    V_Ki = 1;
-    V_Kd = 1;
-
-    Lac_Kp = 1;//Paramètres correction lacet
-    Lac_Ki = 1;
-    Lac_Kd = 1;
-
-    Rou_Kp = 1;//Paramètres correction roulis
-    Rou_Ki = 1;
-    Rou_Kd = 1;
-
-    Tan_Kp = 1;//Paramètres correction tangage
-    Tan_Ki = 1;
-    Tan_Kd = 1;
-
-    P_Kp = 1;//Paramètres correction profondeur
-    P_Ki = 1;
-    P_Kd = 1;
-
-    Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT);
-    Correcteur.SetMode(AUTOMATIC);
-}
-
 
 FonctionsDeBaseMoteur::~FonctionsDeBaseMoteur()
 {
@@ -211,18 +144,25 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
 
 }
 
-void FonctionsDeBaseMoteur::GererProfondeur(double Vitesse, bool Sens)//A modifier
+void FonctionsDeBaseMoteur::GererVitesseProfondeur(double Vitesse, bool Sens)//A modifier
 {
 
 }
 
-void FonctionsDeBaseMoteur::GereInclinaison(double AngleTangage, double AngleRoulis)//A modifier
+void FonctionsDeBaseMoteur::GererPositionProfondeur(double ConsigneProfondeur, double ProfondeurReelle)
 {
 
 }
 
-void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseReelle, bool SensVit, bool SensDeRotation, double Cap, double AngleLacet, double AngleTangage, double AngleRoulis, double ProfondeurConsigne, double ProfondeurReelle, double SensProf)
+void FonctionsDeBaseMoteur::GererInclinaison(double AngleTangage, double AngleRoulis)//A modifier
 {
+
+}
+
+void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseReelle, bool SensVit, bool SensDeRotation, double Cap, double AngleLacet, double AngleTangage, double AngleRoulis, double ProfondeurConsigne, double ProfondeurReelle, bool SensProf)
+{
+    Correcteur.SetMode(AUTOMATIC);
+
     //Correction vitesse
     Ref = VitesseConsigne;
     Entree = VitesseReelle;
@@ -230,7 +170,7 @@ void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseRee
     Kd = V_Kd;
     Ki = V_Ki;
     Correcteur.Compute();
-    Aller(Sortie, Sens, Cap);
+    Aller(Sortie, SensVit, Cap);
 
 
     //Correction lacet
@@ -240,7 +180,7 @@ void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseRee
     Kd = Lac_Kd;
     Ki = Lac_Ki;
     Correcteur.Compute();
-    Tourner(SensDeRotation, 1, VitesseConsigne, Sens);
+    Tourner(SensDeRotation, 1, VitesseConsigne, SensDeRotation);
 
     //Correction roulis
     Ref = 0;
@@ -268,7 +208,7 @@ void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseRee
     Kd = P_Kd;
     Ki = P_Ki;
     Correcteur.Compute();
-    GererProfondeur();//A completer
+    GererPositionProfondeur(ProfondeurConsigne, ProfondeurReelle);//A completer
 
 
 }
