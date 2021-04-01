@@ -33,7 +33,7 @@ void loop() {
         EscFR.write(value);
         EscBL.write(value);
         EscBR.write(value);
-      break;
+        break;
   case 2:
         //Right
         //To go right FL -> Normal / FR -> Reverse / BL -> Reverse / BR -> Normal
@@ -41,6 +41,7 @@ void loop() {
         EscFR.write(value-90);
         EscBL.write(value-90);
         EscBR.write(value);
+        break;
     case 3:
           //Backward
         //To go Backward FL -> Reverse / FR -> Reverse / BL -> reverse / BR -> Reverse
@@ -48,6 +49,7 @@ void loop() {
         EscFR.write(value-90);
         EscBL.write(value-90);
         EscBR.write(value-90);
+        break;
     case 4:
           //Left
         //To go Left FL -> Reverse / FR -> Normal / BL -> Normal / BR -> Reverse
@@ -55,6 +57,7 @@ void loop() {
         EscFR.write(value);
         EscBL.write(value);
         EscBR.write(value-90);
+        break;
   default:
       break;
   }
