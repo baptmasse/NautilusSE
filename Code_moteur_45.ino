@@ -24,38 +24,39 @@ void loop() {
   //Reverse mode : PWM value must be between 0 to 90
   //ATTENTION !! The way motors are facing is important
   //Please refer to the Motors diagram
-  if (direc == 1){
-  //Forward
-  //To go forward all motor need to have a value between 90 to 180)
-  EscFL.write(value);
-  EscFR.write(value);
-  EscBL.write(value);
-  EscBR.write(value);
+  switch (direc))
+  {
+  case 1:
+        //Forward
+        //To go forward all motor need to have a value between 90 to 180)
+        EscFL.write(value);
+        EscFR.write(value);
+        EscBL.write(value);
+        EscBR.write(value);
+      break;
+  case 2:
+        //Right
+        //To go right FL -> Normal / FR -> Reverse / BL -> Reverse / BR -> Normal
+        EscFL.write(value);
+        EscFR.write(value-90);
+        EscBL.write(value-90);
+        EscBR.write(value);
+    case 3:
+          //Backward
+        //To go Backward FL -> Reverse / FR -> Reverse / BL -> reverse / BR -> Reverse
+        EscFL.write(value-90);
+        EscFR.write(value-90);
+        EscBL.write(value-90);
+        EscBR.write(value-90);
+    case 4:
+          //Left
+        //To go Left FL -> Reverse / FR -> Normal / BL -> Normal / BR -> Reverse
+        EscFL.write(value-90);
+        EscFR.write(value);
+        EscBL.write(value);
+        EscBR.write(value-90);
+  default:
+      break;
   }
-  if (direc == 2){
-  //Right
-  //To go right FL -> Normal / FR -> Reverse / BL -> Reverse / BR -> Normal
-  EscFL.write(value);
-  EscFR.write(value-90);
-  EscBL.write(value-90);
-  EscBR.write(value);
-  }
-  if (direc == 3){
-  //Backward
-  //To go Backward FL -> Reverse / FR -> Reverse / BL -> reverse / BR -> Reverse
-  EscFL.write(value-90);
-  EscFR.write(value-90);
-  EscBL.write(value-90);
-  EscBR.write(value-90);
-  }
-  if (direc == 4){
-  //Left
-  //To go Left FL -> Reverse / FR -> Normal / BL -> Normal / BR -> Reverse
-  EscFL.write(value-90);
-  EscFR.write(value);
-  EscBL.write(value);
-  EscBR.write(value-90);
-  }
-  
 
 }
