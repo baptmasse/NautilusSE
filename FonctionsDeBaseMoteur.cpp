@@ -96,7 +96,7 @@ void FonctionsDeBaseMoteur::GererInclinaison(double AngleTangage, double AngleRo
     double Vit3;
     double Vit4;
 
-    Vit1 =
+    Vit1 = ; // a completer
 
     if(AngleTangage != -1) //Si on veut modifier l'angle de tangage
     {
