@@ -152,7 +152,7 @@ void FonctionsDeBaseMoteur::GererInclinaison(double AngleTangage, double AngleRo
                 dif=AngleRoulis-AngleRoulisR;
 
             }
-            else //sens horraire
+            else //sens horaire
             {
                 dif=180-AngleRoulisR;
 
