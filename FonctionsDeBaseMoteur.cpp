@@ -1,6 +1,6 @@
 #include "FonctionsDeBaseMoteur.h"
 
-#include <Arduino.h>
+//#include <Arduino.h>
 
 FonctionsDeBaseMoteur::FonctionsDeBaseMoteur() : Correcteur(&Entree, &Sortie, &Ref, Kp, Ki, Kd, DIRECT)
 {
@@ -9,10 +9,10 @@ FonctionsDeBaseMoteur::FonctionsDeBaseMoteur() : Correcteur(&Entree, &Sortie, &R
 
 FonctionsDeBaseMoteur::~FonctionsDeBaseMoteur()
 {
-    //dtor
+    delete Centrale_Inertielle;
 }
 
-void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypoth√®se : l'angle re√ßu est compris entre 0¬∞ et 360¬∞ avec pour r√©f√©rence l'avant
+void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //HypothËse : l'angle reÁu est compris entre 0∞ et 360∞ avec pour rÈfÈrence l'avant
 {
     bool Sens2;
 
@@ -56,112 +56,140 @@ void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypot
 
 void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRotation, double Speed, bool Sens)
 {
-    //Les distances sont en m√®tres et les angles en degr√©s
-    //Dans cette fonction, le sous-marin tourne autour d'un point situ√© √† une distance √©gale des deux moteurs situ√©s du c√¥t√© duquel le sous-marin tourne
-    //On garde une vitesse constante sur les moteurs, on joue seulement sur l'angle des servos (math√©matiquement plus simple)
-    //Pour SensDeRotation : 0 : tourne √† gauche ; 1 : tourne √† droite
-
-    double d1 = 0.5; //Distance entre le centre de rotation du servo et l'axe de sym√©trie du sous-marin allant de l'avant √† l'arri√®re(demi-largeur); √† d√©finir
-    double d2 = 0.5; //Distance entre le centre de rotation du servo et l'axe de sym√©trie du sous-marin allant d'un c√¥t√© √† l'autre(demi-longueur); √† d√©finir
-    double lambda = distancePointRotation;//Distance entre le poinr autour duquel le sous-marin tourne et l'axe de sym√©trie du sous-marin
-
-    double lambda1 = d1-lambda; //Distance entre le point de rotation et les moteurs situ√©s √† l'int√©rieur de la rotation
-    double lambda2 = lambda+d1; //Distance entre le point de rotation et les moteurs situ√©s √† l'ext√©rieur de la rotation
-
-    double lim = d1 + tan(45)*d2; //Les moteurs √† l'int√©rieur de la rotation ne peuvent pivoter que de 45¬∞ selon la distance √† laquelle se trouve le point de rotation
-                                //Il faut donc d√©finir une limite au-del√† de laquelle leur orientation sera invers√©e de 180¬∞ (ainsi que le sens de rotation des moteurs d'ailleurs)
-
-    double phi1; double phi2; double phi3; double phi4;
-
-    bool Sens2=Sens;
-
-    if(SensDeRotation==0) //Tourne du cot√© gauche
-    {
-        if(lambda<=lim)
-        {
-            phi1 = Signe(lambda1)*Arctan(d1/lambda1);
-            phi3 = 180 + Signe(lambda1)*Arctan(d1/lambda1);
-
-            if(Sens==0)
-                Sens2=1;
-            else
-                Sens2=0;
-        }
-
-        if(lambda>lim)
-        {
-            phi1 = 90 + Arctan(d1/lambda1);
-            phi3 = 90 - Arctan(d1/lambda1);
-        }
-
-        phi2 = -90 + Arctan(d1/lambda2);
-        phi4 = -90 - Arctan(d1/lambda2);
-
-        Servo1.RotationAngle(phi1);
-        Servo2.RotationAngle(phi2);
-        Servo3.RotationAngle(phi3);
-        Servo4.RotationAngle(phi4);
-
-        Moteur1.Rotation(Speed, Sens2);
-        Moteur2.Rotation(Speed, Sens);
-        Moteur3.Rotation(Speed, Sens2);
-        Moteur4.Rotation(Speed, Sens);
-
-    }
-    else //Tourne du c√¥t√© droit
-    {
-        if(lambda<=lim)
-        {
-            phi2 = -Signe(lambda1)*Arctan(d1/lambda1);
-            phi4 = -180 - Signe(lambda1)*Arctan(d1/lambda1);
-
-            if(Sens==0)
-                Sens2=1;
-            else
-                Sens2=0;
-        }
-
-        if(lambda>lim)
-        {
-            phi2 = -90 - Arctan(d1/lambda1);
-            phi4 = 90 + Arctan(d1/lambda1);
-        }
-
-        phi1 = 90 - Arctan(d1/lambda2);
-        phi3 = 90 + Arctan(d1/lambda2);
-
-        Servo1.RotationAngle(phi1);
-        Servo2.RotationAngle(phi2);
-        Servo3.RotationAngle(phi3);
-        Servo4.RotationAngle(phi4);
-
-        Moteur1.Rotation(Speed, Sens);
-        Moteur2.Rotation(Speed, Sens2);
-        Moteur3.Rotation(Speed, Sens);
-        Moteur4.Rotation(Speed, Sens2);
-
-    }
 
 }
 
-void FonctionsDeBaseMoteur::GererVitesseProfondeur(double Vitesse, bool Sens)//A modifier
+void FonctionsDeBaseMoteur::GererVitesseProfondeur(double Vitesse, bool Sens)//Fonction dont la pertinence est ‡ discuter (dÈpend  des caractÈristiques des moteurs de profondeur)
 {
 
 }
 
 void FonctionsDeBaseMoteur::GererPositionProfondeur(double ConsigneProfondeur, double ProfondeurReelle)
 {
+    //Lecture de la profondeur ici ou ‡ un niveau supÈrieur
 
+    if(ConsigneProfondeur<ProfondeurReelle)
+    {
+        MoteurProf1.Rotation(1,0); //Sens et vitesse tout ‡ fait arbitraire, ‡ rÈgler! Le sous-marin est censÈ descendre dans ce cas de figure
+        MoteurProf1.Rotation(1,0);
+        MoteurProf1.Rotation(1,0);
+        MoteurProf1.Rotation(1,0);
+    }
+
+    if(ConsigneProfondeur>ProfondeurReelle)
+    {
+        MoteurProf1.Rotation(1,1); //Sens et vitesse tout ‡ fait arbitraire, ‡ rÈgler! Le sous-marin est censÈ monter dans ce cas de figure
+        MoteurProf1.Rotation(1,1);
+        MoteurProf1.Rotation(1,1);
+        MoteurProf1.Rotation(1,1);
+    }
 }
 
-void FonctionsDeBaseMoteur::GererInclinaison(double AngleTangage, double AngleRoulis)//A modifier
+void FonctionsDeBaseMoteur::GererInclinaison(double AngleTangage, double AngleRoulis, double VitesseProf)//A modifier
 {
+    double psi = AngleTangage; //Angle de consigne de roulis
+    double phi = AngleRoulis; //Angle de consigne de tangage
+    double vit = VitesseProf; //Vitesse de consigne donnÈe auparavant aux moteurs de profondeur
 
+    double Vit1; //Vitesse de consigne donnÈe aux moteurs 1,2,3 et 4 calculÈe ‡ partir de psi, phi et vit
+    double Vit2;
+    double Vit3;
+    double Vit4;
+
+    Vit1 =
+
+    if(AngleTangage != -1) //Si on veut modifier l'angle de tangage
+    {
+        if(AngleTangageR<AngleTangage)
+        {
+            if(AngleTangageR>90) //sens trigo
+            {
+                dif=AngleTangage-AngleTangageR;
+
+            }
+            else if(AngleTangage<90) //sens trigo
+            {
+                dif=AngleTangage-AngleTangageR;
+
+            }
+            else //sens horaire
+            {
+                dif=360-AngleTangageR;
+
+            }
+        }
+        else
+        {
+           if(AngleTangageR<180) //sens horaire
+            {
+                dif=AngleTangageR-AngleTangage;
+
+            }
+            else if(AngleTangage>180) //sens horaire
+            {
+                dif=AngleTangageR-AngleTangage;
+
+            }
+            else if(AngleTangage!=AngleTangageR) //sens trigo
+            {
+                dif=AngleTangage;
+
+            }
+        }
+    }
+
+    if(AngleRoulis!=-1) //Si on veut modifier l'angle de roulis
+    {
+        if(AngleRoulisR<AngleRoulis)
+        {
+            if(AngleRoulisR>180) //sens trigo
+            {
+                dif=AngleRoulis-AngleRoulisR;
+
+            }
+            else if(AngleRoulis<180) //sens trigo
+            {
+                dif=AngleRoulis-AngleRoulisR;
+
+            }
+            else //sens horraire
+            {
+                dif=180-AngleRoulisR;
+
+            }
+        }
+        else
+        {
+           if(AngleRoulisR<180) //sens horaire
+            {
+                dif=AngleRoulisR-AngleRoulis;
+
+            }
+            else if(AngleRoulis<180) //sens horaire
+            {
+                dif=AngleRoulisR-AngleRoulis;
+
+            }
+            else if(AngleRoulis!=AngleRoulisR) //sens trigo
+            {
+                dif=AngleRoulis;
+            }
+        }
+    }
 }
 
-void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseReelle, bool SensVit, bool SensDeRotation, double Cap, double AngleLacet, double AngleTangage, double AngleRoulis, double ProfondeurConsigne, double ProfondeurReelle, bool SensProf)
+void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseReelle, bool SensVit, bool SensDeRotation, double Cap, double ProfondeurConsigne, double ProfondeurReelle, bool SensProf)
 {
-    Correcteur.SetMode(AUTOMATIC);
+    Correcteur.SetMode(AUTOMATIC); //Initialisation du correcteur
+
+    //RelevÈ des donnÈes de la centrale inertielle
+
+    //Variation des angles
+    double AngleLacet = (Centrale_Inertielle->stcGyro.w[0])/32768*180;
+    double AngleRoulis = (Centrale_Inertielle->stcGyro.w[1])/32768*180;
+    double AngleTangage = (Centrale_Inertielle->stcGyro.w[2])/32768*180;
+
+    //Variation
 
     //Correction vitesse
     Ref = VitesseConsigne;
@@ -220,18 +248,13 @@ void FonctionsDeBaseMoteur::ArretUrgence()
     Moteur3.UrgentStop();
     Moteur4.UrgentStop();
 
-    Servo1.PositionUrgence();
-    Servo1.PositionUrgence();
-    Servo1.PositionUrgence();
-    Servo1.PositionUrgence();
-
     MoteurProf1.UrgentStop();
     MoteurProf2.UrgentStop();
     MoteurProf3.UrgentStop();
     MoteurProf4.UrgentStop();
 }
 
-double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan √† l'aide du d√©veloppement limit√© usuel
+double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan ‡ l'aide du dÈveloppement limitÈ usuel
 {
     double atan;
     atan=x;
@@ -247,4 +270,21 @@ double FonctionsDeBaseMoteur::Signe(double x)//Calcul du signe de x
 {
     x = x/abs(x);
     return x;
+}
+
+double FonctionsDeBaseMoteur::MethodeDeSimpson(double t1, double t2, double a1, double a2)
+{
+    double I;
+
+    double x1 = a1;
+    double x2 = (a1+a2)/2;
+    double x3 = a2;
+
+    double w1 = (a2-a1)/6;
+    double w2 = 2*(a2-a1)/3;
+    double w3 = (a2-a1)/6;
+
+    I = x1*w1 + x2*w2 + x3*w3;
+
+    return I;
 }
