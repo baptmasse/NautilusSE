@@ -12,7 +12,7 @@ FonctionsDeBaseMoteur::~FonctionsDeBaseMoteur()
     delete Centrale_Inertielle;
 }
 
-void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypothèse : l'angle reçu est compris entre 0° et 360° avec pour référence l'avant
+void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //HypothÃ¨se : l'angle reÃ§u est compris entre 0Â° et 360Â° avec pour rÃ©fÃ©rence l'avant
 {
     bool Sens2;
 
@@ -28,8 +28,8 @@ void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypot
         Moteur3.Rotation(Speed, Sens);
         Moteur4.Rotation(Speed, Sens);
     }
-
-    if(Angle>45 && Angle<=135)
+    
+    else if(Angle>45 && Angle<=135)
     {
         Moteur1.Rotation(Speed, Sens2);
         Moteur2.Rotation(Speed, Sens);
@@ -37,7 +37,7 @@ void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypot
         Moteur4.Rotation(Speed, Sens2);
     }
 
-    if(Angle>135 && Angle<=225)
+    else if(Angle>135 && Angle<=225)
     {
         Moteur1.Rotation(Speed, Sens2);
         Moteur2.Rotation(Speed, Sens2);
@@ -45,7 +45,7 @@ void FonctionsDeBaseMoteur::Aller(double Speed, bool Sens, double Angle) //Hypot
         Moteur4.Rotation(Speed, Sens2);
     }
 
-    if(Angle>225 || Angle<=315)
+    else if(Angle>225 || Angle<=315)
     {
         Moteur1.Rotation(Speed, Sens);
         Moteur2.Rotation(Speed, Sens2);
@@ -59,18 +59,18 @@ void FonctionsDeBaseMoteur::Tourner(bool SensDeRotation, double distancePointRot
 
 }
 
-void FonctionsDeBaseMoteur::GererVitesseProfondeur(double Vitesse, bool Sens)//Fonction dont la pertinence est à discuter (dépend  des caractéristiques des moteurs de profondeur)
+void FonctionsDeBaseMoteur::GererVitesseProfondeur(double Vitesse, bool Sens)//Fonction dont la pertinence est Ã  discuter (dÃ©pend  des caractÃ©ristiques des moteurs de profondeur)
 {
 
 }
 
 void FonctionsDeBaseMoteur::GererPositionProfondeur(double ConsigneProfondeur, double ProfondeurReelle)
 {
-    //Lecture de la profondeur ici ou à un niveau supérieur
+    //Lecture de la profondeur ici ou Ã  un niveau supÃ©rieur
 
     if(ConsigneProfondeur<ProfondeurReelle)
     {
-        MoteurProf1.Rotation(1,0); //Sens et vitesse tout à fait arbitraire, à régler! Le sous-marin est censé descendre dans ce cas de figure
+        MoteurProf1.Rotation(1,0); //Sens et vitesse tout Ã  fait arbitraire, Ã  rÃ©gler! Le sous-marin est censÃ© descendre dans ce cas de figure
         MoteurProf1.Rotation(1,0);
         MoteurProf1.Rotation(1,0);
         MoteurProf1.Rotation(1,0);
@@ -78,7 +78,7 @@ void FonctionsDeBaseMoteur::GererPositionProfondeur(double ConsigneProfondeur, d
 
     if(ConsigneProfondeur>ProfondeurReelle)
     {
-        MoteurProf1.Rotation(1,1); //Sens et vitesse tout à fait arbitraire, à régler! Le sous-marin est censé monter dans ce cas de figure
+        MoteurProf1.Rotation(1,1); //Sens et vitesse tout Ã  fait arbitraire, Ã  rÃ©gler! Le sous-marin est censÃ© monter dans ce cas de figure
         MoteurProf1.Rotation(1,1);
         MoteurProf1.Rotation(1,1);
         MoteurProf1.Rotation(1,1);
@@ -89,9 +89,9 @@ void FonctionsDeBaseMoteur::GererInclinaison(double AngleTangage, double AngleRo
 {
     double psi = AngleTangage; //Angle de consigne de roulis
     double phi = AngleRoulis; //Angle de consigne de tangage
-    double vit = VitesseProf; //Vitesse de consigne donnée auparavant aux moteurs de profondeur
+    double vit = VitesseProf; //Vitesse de consigne donnÃ©e auparavant aux moteurs de profondeur
 
-    double Vit1; //Vitesse de consigne donnée aux moteurs 1,2,3 et 4 calculée à partir de psi, phi et vit
+    double Vit1; //Vitesse de consigne donnÃ©e aux moteurs 1,2,3 et 4 calculÃ©e Ã  partir de psi, phi et vit
     double Vit2;
     double Vit3;
     double Vit4;
@@ -182,7 +182,7 @@ void FonctionsDeBaseMoteur::Correction(double VitesseConsigne, double VitesseRee
 {
     Correcteur.SetMode(AUTOMATIC); //Initialisation du correcteur
 
-    //Relevé des données de la centrale inertielle
+    //RelevÃ© des donnÃ©es de la centrale inertielle
 
     //Variation des angles
     double AngleLacet = (Centrale_Inertielle->stcGyro.w[0])/32768*180;
@@ -254,7 +254,7 @@ void FonctionsDeBaseMoteur::ArretUrgence()
     MoteurProf4.UrgentStop();
 }
 
-double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan à l'aide du développement limité usuel
+double FonctionsDeBaseMoteur::Arctan(double x)//Calcul de arctan Ã  l'aide du dÃ©veloppement limitÃ© usuel
 {
     double atan;
     atan=x;
