@@ -34,21 +34,24 @@ class FonctionsDeBaseMoteur
     protected:
 
     private:
-        int pinMot1; //Pin des moteure de direction
-        int pinMot2;
-        int pinMot3;
-        int pinMot4;
+        //Pin des moteurs principaux (Pin PWM arduino)
+        int pinMot1 =13;  //avant droite
+        int pinMot2 =12;  //arrière droite
+        int pinMot3 =11;   //avant gauche
+        int pinMot4 =10;   //arrière gauche
 
-        int pinServo1; //Pin des servos gérant l'orientation des moteurs de direction
-        int pinServo2;
-        int pinServo3;
-        int pinServo4;
+        //obsolete
+        //int pinServo1; //Pin des servos gérant l'orientation des moteurs de direction
+        //int pinServo2;
+        //int pinServo3;
+        //int pinServo4;
 
-        int pinMotProf1; //Pin des moteure de profondeur
-        int pinMotProf2;
-        int pinMotProf3;
-        int pinMotProf4;
-
+        //Pin des moteure de profondeur
+        int pinMotProf1 =9;//avant droite 
+        int pinMotProf2 = 8;//arrière droite
+        int pinMotProf3 = 6; //avant gauche
+        int pinMotProf4 = 7; //arrière gauche
+    
         //Moteurs de direction
         Moteurs Moteur1; //Moteur 1 : moteur avant gauche (en se situant derrière le sous-marin)
         Moteurs Moteur2; //Moteur 2 : moteur avant droit
